@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="navbar">
+    <a href="/">Início</a>
+</div>
+
+<h1>Selecione seu Perfil</h1>
+
+<div class="grid">
+    {% for professor in professores %}
+    <div class="card">
+        <h3>{{ professor.nome }}</h3>
+        <p>Escola: {{ professor.escola.nome }}</p>
+        <form method="POST" action="{{ url_for('professor.selecionar_post') }}">
+            <input type="hidden" name="professor_id" value="{{ professor.id }}">
+            <button type="submit" class="button">Acessar como {{ professor.nome }}</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

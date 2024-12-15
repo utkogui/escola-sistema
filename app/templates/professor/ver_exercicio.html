@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ exercicio.titulo }}</h1>
+
+<div class="info-section">
+    <h3>Informações do Exercício</h3>
+    <p><strong>Turma:</strong> {{ exercicio.turma.nome }}</p>
+    <p><strong>Data de Entrega:</strong> {{ exercicio.data_entrega.strftime('%d/%m/%Y') }}</p>
+    <p><strong>Descrição:</strong></p>
+    <div class="descricao">
+        {{ exercicio.descricao }}
+    </div>
+</div>
+
+<div class="alunos-section">
+    <h3>Alunos Designados</h3>
+    <table border="1">
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Status</th>
+        </tr>
+        {% for aluno in exercicio.alunos_designados %}
+        <tr>
+            <td>{{ aluno.nome }}</td>
+            <td>{{ aluno.email }}</td>
+            <td>
+                {% set respondeu = aluno.id in respostas|map(attribute='aluno_id')|list %}
+                {% if respondeu %}
+                    <span class="status-entregue">Entregue</span>
+                {% else %}
+                    <span class="status-pendente">Pendente</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="respostas-section">
+    <h3>Respostas Recebidas</h3>
+    {% if respostas %}
+    <table border="1">
+        <tr>
+            <th>Aluno</th>
+            <th>Data Envio</th>
+            <th>Nota</th>
+            <th>Ações</th>
+        </tr>
+        {% for resposta in respostas %}
+        <tr>
+            <td>{{ resposta.aluno.nome }}</td>
+            <td>{{ resposta.data_envio.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ resposta.nota or 'Não avaliado' }}</td>
+            <td>
+                <button onclick="verResposta({{ resposta.id }})">Ver Resposta</button>
+                {% if not resposta.nota %}
+                    <button onclick="avaliarResposta({{ resposta.id }})">Avaliar</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Nenhuma resposta recebida ainda.</p>
+    {% endif %}
+</div>
+
+<div class="actions">
+    <a href="{{ url_for('professor.editar_exercicio', exercicio_id=exercicio.id) }}" class="button">Editar Exercício</a>
+    <a href="{{ url_for('professor.dashboard') }}" class="button">Voltar para Dashboard</a>
+</div>
+
+<style>
+.info-section, .alunos-section, .respostas-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.descricao {
+    white-space: pre-line;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+.status-entregue {
+    color: green;
+    font-weight: bold;
+}
+.status-pendente {
+    color: orange;
+    font-weight: bold;
+}
+.button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+.button:hover {
+    background-color: #45a049;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: #f2f2f2;
+}
+</style>
+
+<script>
+function verResposta(respostaId) {
+    alert('Implementar visualização da resposta ' + respostaId);
+}
+
+function avaliarResposta(respostaId) {
+    const nota = prompt('Digite a nota (0-10):');
+    if (nota === null) return;
+    
+    const comentario = prompt('Digite um comentário:');
+    if (comentario === null) return;
+    
+    fetch(`/professor/resposta/${respostaId}/corrigir`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            nota: parseFloat(nota),
+            comentario: comentario
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Resposta avaliada com sucesso!');
+        location.reload();
+    })
+    .catch(error => alert('Erro ao avaliar resposta: ' + error));
+}
+</script>
+{% endblock %}

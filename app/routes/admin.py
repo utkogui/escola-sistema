@@ -375,7 +375,7 @@ def atualizar_aluno(aluno_id):
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
-@admin.route('/aluno/<int:aluno_id>/delete', methods=['GET', 'DELETE'])
+@admin.route('aluno/<int:aluno_id>/delete', methods=['GET', 'DELETE'])
 def deletar_aluno(aluno_id):
     try:
         aluno = Aluno.query.get_or_404(aluno_id)

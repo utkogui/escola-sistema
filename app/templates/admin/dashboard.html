@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="navbar">
+    <a href="/">Início</a>
+    <a href="/admin/escolas/view">Escolas</a>
+    <a href="/admin/professores/view">Professores</a>
+    <a href="/admin/turmas/view">Turmas</a>
+    <a href="/admin/alunos/view">Alunos</a>
+</div>
+
+<h1>Painel Administrativo</h1>
+
+<div class="grid">
+    <div class="card">
+        <h2>Escolas</h2>
+        <p>Total: {{ total_escolas }}</p>
+        <a href="/admin/escolas/view" class="button">Gerenciar Escolas</a>
+    </div>
+
+    <div class="card">
+        <h2>Professores</h2>
+        <p>Total: {{ total_professores }}</p>
+        <a href="/admin/professores/view" class="button">Gerenciar Professores</a>
+    </div>
+
+    <div class="card">
+        <h2>Turmas</h2>
+        <p>Total: {{ total_turmas }}</p>
+        <a href="/admin/turmas/view" class="button">Gerenciar Turmas</a>
+    </div>
+
+    <div class="card">
+        <h2>Alunos</h2>
+        <p>Total: {{ total_alunos }}</p>
+        <a href="/admin/alunos/view" class="button">Gerenciar Alunos</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Novo Exercício</h1>
+
+<form method="POST">
+    <div class="form-group">
+        <label>Título:</label>
+        <input type="text" name="titulo" required class="form-control">
+    </div>
+    
+    <div class="form-group">
+        <label>Descrição:</label>
+        <textarea name="descricao" rows="4" required class="form-control"></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label>Turma:</label>
+        <select name="turma_id" id="turma_select" required class="form-control">
+            <option value="">Selecione uma turma</option>
+            {% for turma in turmas %}
+            <option value="{{ turma.id }}">{{ turma.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Data de Entrega:</label>
+        <input type="date" name="data_entrega" required class="form-control">
+    </div>
+    
+    <div id="alunos_container" style="display: none;" class="form-group">
+        <label>Selecione os Alunos:</label>
+        <div id="alunos_list" class="checkbox-list">
+            <!-- Lista de alunos será carregada via JavaScript -->
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <button type="submit" class="button">Criar Exercício</button>
+        <a href="{{ url_for('professor.dashboard') }}" class="button">Cancelar</a>
+    </div>
+</form>
+
+<style>
+.form-group {
+    margin-bottom: 15px;
+}
+.form-control {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.checkbox-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 5px;
+}
+.button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+.button:hover {
+    background-color: #45a049;
+}
+</style>
+
+<script>
+document.getElementById('turma_select').addEventListener('change', function() {
+    const turmaId = this.value;
+    const alunosContainer = document.getElementById('alunos_container');
+    
+    if (!turmaId) {
+        alunosContainer.style.display = 'none';
+        return;
+    }
+    
+    fetch(`/professor/turma/${turmaId}/alunos`)
+        .then(response => response.json())
+        .then(alunos => {
+            const alunosHtml = alunos.map(aluno => `
+                <div class="checkbox-item">
+                    <input type="checkbox" name="alunos" value="${aluno.id}" id="aluno_${aluno.id}">
+                    <label for="aluno_${aluno.id}">${aluno.nome} (${aluno.email})</label>
+                </div>
+            `).join('');
+            
+            document.getElementById('alunos_list').innerHTML = alunosHtml;
+            alunosContainer.style.display = 'block';
+        })
+        .catch(error => console.error('Erro ao carregar alunos:', error));
+});
+</script>
+{% endblock %}

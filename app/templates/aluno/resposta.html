@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="resposta-container">
+    <h1>Resposta ao Exercício</h1>
+    
+    <div class="exercicio-info">
+        <h2>{{ resposta.exercicio.titulo }}</h2>
+        <p><strong>Professor:</strong> {{ resposta.exercicio.professor.nome }}</p>
+        <p><strong>Data de Entrega:</strong> {{ resposta.data_envio.strftime('%d/%m/%Y %H:%M') }}</p>
+    </div>
+
+    <div class="resposta-content">
+        <h3>Sua Resposta</h3>
+        <div class="content-box">
+            {{ resposta.conteudo }}
+        </div>
+    </div>
+
+    {% if resposta.nota is not none %}
+    <div class="avaliacao-section">
+        <h3>Avaliação do Professor</h3>
+        <p><strong>Nota:</strong> {{ resposta.nota }}</p>
+        {% if resposta.comentario_professor %}
+            <p><strong>Comentário:</strong> {{ resposta.comentario_professor }}</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="aguardando">
+        <p>Aguardando correção do professor</p>
+    </div>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{{ url_for('aluno.dashboard') }}" class="button">Voltar para Dashboard</a>
+        
+        {% if tem_anterior %}
+        <a href="{{ url_for('aluno.ver_resposta', resposta_id=resposta_anterior_id) }}" class="button">Resposta Anterior</a>
+        {% endif %}
+        
+        {% if tem_proxima %}
+        <a href="{{ url_for('aluno.ver_resposta', resposta_id=resposta_proxima_id) }}" class="button">Próxima Resposta</a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.resposta-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.exercicio-info {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.content-box {
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    white-space: pre-line;
+    margin: 10px 0;
+}
+.avaliacao-section {
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.aguardando {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    margin: 20px 0;
+}
+.actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+.button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #45a049;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard do Aluno</h1>
+<h2>Bem-vindo, {{ aluno.nome }}</h2>
+
+<div class="exercicios-section">
+    <h3>Exercícios Pendentes</h3>
+    {% if exercicios_pendentes %}
+    <table border="1">
+        <tr>
+            <th>Título</th>
+            <th>Professor</th>
+            <th>Data de Entrega</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        {% for exercicio in exercicios_pendentes %}
+        <tr>
+            <td>{{ exercicio.titulo }}</td>
+            <td>{{ exercicio.professor.nome }}</td>
+            <td>{{ exercicio.data_entrega.strftime('%d/%m/%Y') }}</td>
+            <td>
+                {% if exercicio.data_entrega < now() %}
+                    <span class="status-atrasado">Atrasado</span>
+                {% else %}
+                    <span class="status-pendente">Pendente</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('aluno.ver_exercicio', exercicio_id=exercicio.id) }}" class="button">Responder</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Nenhum exercício pendente.</p>
+    {% endif %}
+
+    <h3>Exercícios Entregues</h3>
+    {% if exercicios_entregues %}
+    <table border="1">
+        <tr>
+            <th>Título</th>
+            <th>Professor</th>
+            <th>Data da Entrega</th>
+            <th>Nota</th>
+            <th>Ações</th>
+        </tr>
+        {% for item in exercicios_entregues %}
+        <tr>
+            <td>{{ item.exercicio.titulo }}</td>
+            <td>{{ item.exercicio.professor.nome }}</td>
+            <td>{{ item.resposta.data_envio.strftime('%d/%m/%Y') }}</td>
+            <td>
+                {% if item.resposta.nota is not none %}
+                    {{ item.resposta.nota }}
+                {% else %}
+                    Aguardando correção
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('aluno.ver_resposta', resposta_id=item.resposta.id) }}" class="button">Ver Resposta</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>Nenhum exercício entregue.</p>
+    {% endif %}
+</div>
+
+<style>
+.exercicios-section {
+    margin: 20px 0;
+}
+.status-atrasado {
+    color: red;
+    font-weight: bold;
+}
+.status-pendente {
+    color: orange;
+    font-weight: bold;
+}
+.button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+th {
+    background-color: #f2f2f2;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard do Professor</h1>
+<h2>Bem-vindo, {{ professor.nome }}</h2>
+
+<div class="actions">
+    <a href="{{ url_for('professor.novo_exercicio') }}" class="button">Criar Novo Exercício</a>
+</div>
+
+<h3>Seus Exercícios</h3>
+<table border="1">
+    <tr>
+        <th>Título</th>
+        <th>Turma</th>
+        <th>Data Entrega</th>
+        <th>Alunos Designados</th>
+        <th>Respostas</th>
+        <th>Ações</th>
+    </tr>
+    {% for exercicio in exercicios %}
+    <tr>
+        <td>{{ exercicio.titulo }}</td>
+        <td>{{ exercicio.turma.nome }}</td>
+        <td>{{ exercicio.data_entrega.strftime('%d/%m/%Y') }}</td>
+        <td>{{ exercicio.alunos_designados|length }} aluno(s)</td>
+        <td>{{ exercicio.respostas|length }} resposta(s)</td>
+        <td>
+            <a href="{{ url_for('professor.ver_exercicio', exercicio_id=exercicio.id) }}">Ver</a> |
+            <a href="{{ url_for('professor.editar_exercicio', exercicio_id=exercicio.id) }}">Editar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not exercicios %}
+<p>Nenhum exercício criado ainda.</p>
+{% endif %}
+{% endblock %}

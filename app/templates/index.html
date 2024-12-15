@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="text-align: center; margin-bottom: 40px;">Sistema Escolar</h1>
+
+<div class="grid">
+    <div class="card">
+        <h2>Área Administrativa</h2>
+        <p>Gerencie escolas, turmas, professores e alunos.</p>
+        <a href="/admin/dashboard" class="button">Acessar como Admin</a>
+    </div>
+    
+    <div class="card">
+        <h2>Área do Professor</h2>
+        <p>Crie exercícios e avalie as respostas dos alunos.</p>
+        <a href="/professor/selecionar" class="button">Acessar como Professor</a>
+    </div>
+    
+    <div class="card">
+        <h2>Área do Aluno</h2>
+        <p>Acesse seus exercícios e envie respostas.</p>
+        <a href="/aluno/selecionar" class="button">Acessar como Aluno</a>
+    </div>
+</div>
+{% endblock %}
