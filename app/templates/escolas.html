@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Gerenciar Escolas</h1>
+
+<h2>Adicionar Nova Escola</h2>
+<form action="/admin/escola" method="POST">
+    <input type="text" name="nome" placeholder="Nome da Escola" required>
+    <button type="submit">Adicionar Escola</button>
+</form>
+
+<h2>Lista de Escolas</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Ações</th>
+    </tr>
+    {% for escola in escolas %}
+    <tr>
+        <td>{{ escola.id }}</td>
+        <td>{{ escola.nome }}</td>
+        <td>{{ "Ativo" if escola.ativo else "Inativo" }}</td>
+        <td>
+            <a href="/admin/escola/{{ escola.id }}/edit">Editar</a> |
+            <a href="/admin/escola/{{ escola.id }}/delete" onclick="return confirm('Tem certeza?')">Deletar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

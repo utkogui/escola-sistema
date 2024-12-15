@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Gerenciar Alunos</h1>
+
+<h2>Adicionar Alunos</h2>
+<form id="alunosForm" action="/admin/alunos" method="POST">
+    <div>
+        <select name="turma_id" required>
+            <option value="">Selecione a Turma</option>
+            {% for turma in turmas %}
+            <option value="{{ turma.id }}">{{ turma.nome }} - {{ turma.escola.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="alunosContainer">
+        <div class="aluno-entry">
+            <input type="text" name="nomes[]" placeholder="Nome do Aluno" required>
+            <input type="email" name="emails[]" placeholder="Email do Aluno" required>
+            <input type="text" name="matriculas[]" placeholder="Matrícula" required>
+        </div>
+    </div>
+
+    <button type="button" onclick="adicionarAluno()">+ Adicionar mais um aluno</button>
+    <button type="submit">Cadastrar Alunos</button>
+</form>
+
+<h2>Lista de Alunos</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Matrícula</th>
+        <th>Turma</th>
+        <th>Escola</th>
+        <th>Status</th>
+        <th>Ações</th>
+    </tr>
+    {% for aluno in alunos %}
+    <tr>
+        <td>{{ aluno.id }}</td>
+        <td>{{ aluno.nome }}</td>
+        <td>{{ aluno.email }}</td>
+        <td>{{ aluno.matricula }}</td>
+        <td>{{ aluno.turma.nome }}</td>
+        <td>{{ aluno.turma.escola.nome }}</td>
+        <td>{{ "Ativo" if aluno.ativo else "Inativo" }}</td>
+        <td>
+            <a href="/admin/aluno/{{ aluno.id }}/edit">Editar</a> |
+            <a href="/admin/aluno/{{ aluno.id }}/delete" onclick="return confirm('Tem certeza?')">Deletar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function adicionarAluno() {
+    const container = document.getElementById('alunosContainer');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'aluno-entry';
+    newEntry.innerHTML = `
+        <input type="text" name="nomes[]" placeholder="Nome do Aluno" required>
+        <input type="email" name="emails[]" placeholder="Email do Aluno" required>
+        <input type="text" name="matriculas[]" placeholder="Matrícula" required>
+        <button type="button" onclick="this.parentElement.remove()">Remover</button>
+    `;
+    container.appendChild(newEntry);
+}
+</script>
+
+<style>
+.aluno-entry {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.aluno-entry input {
+    margin: 0 5px;
+}
+</style>
+{% endblock %}

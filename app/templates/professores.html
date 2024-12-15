@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Gerenciar Professores</h1>
+
+<h2>Adicionar Novo Professor</h2>
+<form action="/admin/professor" method="POST">
+    <input type="text" name="nome" placeholder="Nome do Professor" required><br>
+    <input type="email" name="email" placeholder="Email do Professor" required><br>
+    <select name="escola_id" required>
+        <option value="">Selecione uma Escola</option>
+        {% for escola in escolas %}
+        <option value="{{ escola.id }}">{{ escola.nome }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Adicionar Professor</button>
+</form>
+
+<h2>Lista de Professores</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Escola</th>
+        <th>Status</th>
+        <th>Ações</th>
+    </tr>
+    {% for professor in professores %}
+    <tr>
+        <td>{{ professor.id }}</td>
+        <td>{{ professor.nome }}</td>
+        <td>{{ professor.email }}</td>
+        <td>{{ professor.escola.nome }}</td>
+        <td>{{ "Ativo" if professor.ativo else "Inativo" }}</td>
+        <td>
+            <a href="/admin/professor/{{ professor.id }}/edit">Editar</a> |
+            <a href="/admin/professor/{{ professor.id }}/delete" onclick="return confirm('Tem certeza?')">Deletar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

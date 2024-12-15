@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Gerenciar Turmas</h1>
+
+<h2>Adicionar Nova Turma</h2>
+<form action="/admin/turma" method="POST">
+    <input type="text" name="nome" placeholder="Nome da Turma" required><br>
+    <select name="periodo" required>
+        <option value="">Selecione o Período</option>
+        <option value="Manhã">Manhã</option>
+        <option value="Tarde">Tarde</option>
+        <option value="Noite">Noite</option>
+    </select><br>
+    <select name="escola_id" required>
+        <option value="">Selecione uma Escola</option>
+        {% for escola in escolas %}
+        <option value="{{ escola.id }}">{{ escola.nome }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Adicionar Turma</button>
+</form>
+
+<h2>Lista de Turmas</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Período</th>
+        <th>Escola</th>
+        <th>Status</th>
+        <th>Ações</th>
+    </tr>
+    {% for turma in turmas %}
+    <tr>
+        <td>{{ turma.id }}</td>
+        <td>{{ turma.nome }}</td>
+        <td>{{ turma.periodo }}</td>
+        <td>{{ turma.escola.nome }}</td>
+        <td>{{ "Ativo" if turma.ativo else "Inativo" }}</td>
+        <td>
+            <a href="/admin/turma/{{ turma.id }}/edit">Editar</a> |
+            <a href="/admin/turma/{{ turma.id }}/delete" onclick="return confirm('Tem certeza?')">Deletar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
