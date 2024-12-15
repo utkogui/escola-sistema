@@ -12,12 +12,16 @@ from models.resposta import Resposta
 def create_app():
     app = Flask(__name__)
     
-    # Configuração do banco de dados baseada no ambiente
-    if os.environ.get('RENDER'):
-        # Configuração para o Render (PostgreSQL)
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://')
+    # Configuração do banco de dados
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+    
+    if DATABASE_URL:
+        print(f"Usando banco de dados: {DATABASE_URL}")
+        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
     else:
-        # Configuração local (SQLite)
+        print("DATABASE_URL não encontrada, usando SQLite")
         basedir = os.path.abspath(os.path.dirname(__file__))
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'escola.db')
 
@@ -66,13 +70,15 @@ def create_app():
 
     @app.errorhandler(500)
     def internal_error(error):
+        app.logger.error(f"Erro 500: {str(error)}")
         db.session.rollback()
         return render_template('errors/500.html'), 500
 
     @app.errorhandler(Exception)
     def handle_exception(e):
-        app.logger.error(f'Erro não tratado: {str(e)}')
-        db.session.rollback()
+        app.logger.error(f"Erro não tratado: {str(e)}")
+        if db.session:
+            db.session.rollback()
         return render_template('errors/500.html'), 500
 
     # Funções utilitárias para templates
@@ -91,7 +97,10 @@ app = create_app()
 if __name__ == '__main__':
     with app.app_context():
         try:
+            # Criar todas as tabelas
             db.create_all()
+            
+            # Verificar se já existem dados no banco
             if not Escola.query.first():
                 print("Banco de dados vazio. Executando seed...")
                 from seed import seed_database
@@ -101,6 +110,7 @@ if __name__ == '__main__':
                 print("Banco de dados já contém dados. Pulando seed.")
         except Exception as e:
             print(f"Erro ao inicializar o banco de dados: {e}")
-            db.session.rollback()
+            if db.session:
+                db.session.rollback()
     
     app.run(debug=True, port=5001)
