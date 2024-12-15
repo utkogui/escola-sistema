@@ -12,11 +12,17 @@ from models.resposta import Resposta
 def create_app():
     app = Flask(__name__)
     
-    # Configuração
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'escola.db')
+    # Configuração do banco de dados baseada no ambiente
+    if os.environ.get('RENDER'):
+        # Configuração para o Render (PostgreSQL)
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://')
+    else:
+        # Configuração local (SQLite)
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'escola.db')
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'sua_chave_secreta_aqui')
 
     # Inicializar extensões
     db.init_app(app)
@@ -90,7 +96,11 @@ if __name__ == '__main__':
                 print("Banco de dados vazio. Executando seed...")
                 from seed import seed_database
                 seed_database()
+                print("Seed executado com sucesso!")
+            else:
+                print("Banco de dados já contém dados. Pulando seed.")
         except Exception as e:
             print(f"Erro ao inicializar o banco de dados: {e}")
+            db.session.rollback()
     
     app.run(debug=True, port=5001)
