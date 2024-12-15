@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: flask-backend
+    env: python
+    buildCommand: ""
+    startCommand: "cd app && python app.py"
+    plan: free
+    envVars:
+      - key: PORT
+        value: "5000"
